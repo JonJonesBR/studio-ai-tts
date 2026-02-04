@@ -1,0 +1,12 @@
+{
+    "motor_padrao": "edge",
+    "velocidade": "+0%",
+    "limite_chunk": 3000,
+    "modelo_gemini": "gemini-2.5-flash-preview-tts",
+    "google_keys": [
+        "YOUR_GOOGLE_API_KEY_1_HERE",
+        "YOUR_GOOGLE_API_KEY_2_HERE"
+    ],
+    "voz_edge": "pt-BR-AntonioNeural",
+    "voz_google": "Puck"
+}

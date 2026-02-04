@@ -1,0 +1,63 @@
+# =============================================================================
+# STUDIO AI TTS - .gitignore
+# =============================================================================
+
+# Configurações com chaves sensíveis (NUNCA commitar!)
+studio_config.json
+
+# Cache de áudio local
+.studio_ai_cache/
+
+# Arquivos temporários de processamento
+.temp_*/
+concat_list.txt
+
+# Arquivos de áudio gerados (opcional - remova se quiser versionar)
+*.mp3
+*.wav
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
