@@ -11,7 +11,7 @@ echo "📦 [1/4] Atualizando pacotes do sistema..."
 pkg update -y && pkg upgrade -y
 
 echo "📦 [2/4] Instalando dependências (Python, FFmpeg)..."
-pkg install python ffmpeg -y
+pkg install python ffmpeg libxml2 libxslt clang make -y
 
 # 2. Configurar armazenamento
 echo "📂 [3/4] Configurando permissão de armazenamento..."
@@ -21,7 +21,7 @@ sleep 3
 
 # 3. Instalar bibliotecas Python
 echo "🐍 [4/4] Instalando bibliotecas Python..."
-pip install --upgrade pip
+# pip install --upgrade pip # Removido para evitar erros no Termux
 pip install -r requirements.txt
 
 # 4. Configuração inicial
