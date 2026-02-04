@@ -71,23 +71,13 @@ cd studio-ai-tts
 pip install aiohttp edge-tts colorama pypdf ebooklib beautifulsoup4
 ```
 
-### Passo 5: Configurar (se quiser usar vozes Gemini)
-
-```bash
-# Copia o arquivo de exemplo
-cp config.example.json studio_config.json
-
-# Edita com suas chaves (veja seção "Como obter API Key")
-nano studio_config.json
-```
-
-> 💡 **Dica:** Se não tiver API key, não se preocupe! O Edge TTS funciona sem chave.
-
-### Passo 6: Executar
+### Passo 5: Executar
 
 ```bash
 python tts.py
 ```
+
+> 💡 **Dica:** O Edge TTS funciona sem nenhuma configuração! Se quiser usar vozes Gemini, adicione suas API keys pelo menu `2 - Gerenciar Chaves` dentro do programa.
 
 ---
 
@@ -133,16 +123,13 @@ cd C:\StudioAI
 pip install aiohttp edge-tts colorama pypdf ebooklib beautifulsoup4
 ```
 
-### Passo 5: Configurar (opcional)
-
-1. Na pasta do projeto, copie `config.example.json` e renomeie para `studio_config.json`
-2. Abra com o Bloco de Notas e adicione suas API keys (veja seção abaixo)
-
-### Passo 6: Executar
+### Passo 5: Executar
 
 ```cmd
 python tts.py
 ```
+
+> 💡 **Dica:** O Edge TTS funciona sem nenhuma configuração! Se quiser usar vozes Gemini, adicione suas API keys pelo menu `2 - Gerenciar Chaves` dentro do programa.
 
 ---
 
@@ -162,13 +149,11 @@ cd studio-ai-tts
 # Instala bibliotecas Python
 pip3 install aiohttp edge-tts colorama pypdf ebooklib beautifulsoup4
 
-# Configura (opcional)
-cp config.example.json studio_config.json
-nano studio_config.json
-
 # Executa
 python3 tts.py
 ```
+
+> 💡 **Dica:** Configure API keys pelo menu `2 - Gerenciar Chaves` dentro do programa.
 
 ---
 
@@ -190,35 +175,36 @@ cd studio-ai-tts
 # Instala bibliotecas
 pip3 install aiohttp edge-tts colorama pypdf ebooklib beautifulsoup4
 
-# Configura (opcional)
-cp config.example.json studio_config.json
-nano studio_config.json
-
 # Executa
 python3 tts.py
 ```
 
+> 💡 **Dica:** Configure API keys pelo menu `2 - Gerenciar Chaves` dentro do programa.
+
 ---
 
-## 🔑 Como Obter API Key do Google (Gratuita!)
+## 🔑 Como Obter e Adicionar API Key do Google (Gratuita!)
 
 > **Necessário apenas se você quiser usar as vozes premium do Gemini.**  
 > O Edge TTS funciona sem nenhuma chave!
+
+### Obtendo a chave
 
 1. Acesse [aistudio.google.com](https://aistudio.google.com/)
 2. Faça login com sua conta Google
 3. Clique em **"Get API Key"** no menu lateral
 4. Clique em **"Create API Key"**
 5. Copie a chave gerada
-6. Cole no arquivo `studio_config.json`:
 
-```json
-{
-    "google_keys": ["SUA_CHAVE_AQUI"]
-}
-```
+### Adicionando no programa
 
-> 💡 **Dica:** Você pode adicionar múltiplas chaves para aumentar sua cota diária!
+1. Execute o programa (`python tts.py`)
+2. Escolha a opção **`2 - Gerenciar Chaves API`**
+3. Pressione **`A`** para adicionar
+4. Cole sua(s) chave(s) e pressione Enter
+5. Pronto! 🎉
+
+> 💡 **Dica:** Você pode adicionar múltiplas chaves separadas por vírgula para aumentar sua cota diária!
 
 ---
 
