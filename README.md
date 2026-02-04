@@ -59,10 +59,10 @@ termux-setup-storage
 cd ~/storage/downloads
 
 # Baixa o projeto
-git clone https://github.com/JonJonesBR/AUDIOBOOK.PY.git
+git clone https://github.com/JonJonesBR/studio-ai-tts.git
 
 # Entra na pasta
-cd AUDIOBOOK.PY
+cd studio-ai-tts
 ```
 
 ### Passo 4: Instalar dependências
@@ -83,7 +83,7 @@ nano studio_config.json
 
 > 💡 **Dica:** Se não tiver API key, não se preocupe! O Edge TTS funciona sem chave.
 
-### Passo 6: Executar!
+### Passo 6: Executar
 
 ```bash
 python tts.py
@@ -127,7 +127,7 @@ python tts.py
 cd C:\StudioAI
 ```
 
-3. Instale as bibliotecas:
+1. Instale as bibliotecas:
 
 ```cmd
 pip install aiohttp edge-tts colorama pypdf ebooklib beautifulsoup4
@@ -138,7 +138,7 @@ pip install aiohttp edge-tts colorama pypdf ebooklib beautifulsoup4
 1. Na pasta do projeto, copie `config.example.json` e renomeie para `studio_config.json`
 2. Abra com o Bloco de Notas e adicione suas API keys (veja seção abaixo)
 
-### Passo 6: Executar!
+### Passo 6: Executar
 
 ```cmd
 python tts.py
@@ -156,8 +156,8 @@ sudo apt update
 sudo apt install python3 python3-pip ffmpeg git -y
 
 # Baixa o projeto
-git clone https://github.com/JonJonesBR/AUDIOBOOK.PY.git
-cd AUDIOBOOK.PY
+git clone https://github.com/JonJonesBR/studio-ai-tts.git
+cd studio-ai-tts
 
 # Instala bibliotecas Python
 pip3 install aiohttp edge-tts colorama pypdf ebooklib beautifulsoup4
@@ -184,8 +184,8 @@ python3 tts.py
 brew install python ffmpeg git
 
 # Baixa o projeto
-git clone https://github.com/JonJonesBR/AUDIOBOOK.PY.git
-cd AUDIOBOOK.PY
+git clone https://github.com/JonJonesBR/studio-ai-tts.git
+cd studio-ai-tts
 
 # Instala bibliotecas
 pip3 install aiohttp edge-tts colorama pypdf ebooklib beautifulsoup4
@@ -247,7 +247,7 @@ python3 tts.py
 ## 📁 Estrutura do Projeto
 
 ```
-AUDIOBOOK.PY/
+studio-ai-tts/
 ├── tts.py                  # Script principal
 ├── config.example.json     # Template de configuração
 ├── studio_config.json      # Configurações do usuário (gitignored)
@@ -394,8 +394,8 @@ await km.rotate()  # Muda para próxima chave
 
 ```bash
 # Clone o repositório
-git clone https://github.com/JonJonesBR/AUDIOBOOK.PY.git
-cd AUDIOBOOK.PY
+git clone https://github.com/JonJonesBR/studio-ai-tts.git
+cd studio-ai-tts
 
 # Crie ambiente virtual
 python -m venv venv
@@ -442,6 +442,7 @@ python tts.py
 ### O programa trava no meio da conversão
 
 Isso geralmente acontece por rate limiting. O programa automaticamente:
+
 1. Rotaciona entre suas API keys
 2. Aguarda 60 segundos se todas as keys estiverem limitadas
 3. Retenta o chunk que falhou
@@ -451,6 +452,7 @@ Isso geralmente acontece por rate limiting. O programa automaticamente:
 ### Erro "FFmpeg não encontrado"
 
 FFmpeg é necessário para unir os chunks de áudio. Instale conforme seu sistema:
+
 - **Windows:** Siga o guia na seção Windows
 - **Linux:** `sudo apt install ffmpeg`
 - **macOS:** `brew install ffmpeg`
