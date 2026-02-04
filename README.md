@@ -6,7 +6,7 @@
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS%20%7C%20Android-lightgrey.svg)]()
 
-Transforme qualquer texto, PDF ou EPUB em audiobooks de alta qualidade usando as melhores vozes de IA disponíveis.
+Transforme qualquer texto, PDF, EPUB ou DOCX em audiobooks de alta qualidade usando as melhores vozes de IA disponíveis.
 
 **[📖 Guia para Iniciantes](#-guia-para-iniciantes)** • **[🔧 Documentação Técnica](#-documentação-técnica)** • **[❓ FAQ](#-perguntas-frequentes)**
 
@@ -15,11 +15,15 @@ Transforme qualquer texto, PDF ou EPUB em audiobooks de alta qualidade usando as
 ## ✨ Recursos
 
 - 🎙️ **Duas engines de TTS:** Google Gemini (qualidade premium) e Microsoft Edge TTS (gratuito e ilimitado)
-- 📚 **Suporte a múltiplos formatos:** TXT, MD, PDF e EPUB
+- 📚 **Suporte a múltiplos formatos:** TXT, MD, PDF, EPUB e DOCX
 - 🌍 **30+ vozes multilíngues:** Português, Inglês, Espanhol, Francês e mais
 - 💾 **Sistema de cache inteligente:** Evita reprocessar textos já convertidos
 - 🔄 **Rotação automática de API keys:** Maximiza uso das cotas gratuitas
 - 📱 **Multiplataforma:** Funciona em Windows, Linux, macOS e Android (Termux)
+- 📁 **Modo Lote:** Processe múltiplos arquivos de uma vez
+- ⏱️ **Estimativa de Tempo:** Veja quanto tempo falta para a conversão
+- ⚡ **Processamento Paralelo:** Conversão mais rápida com chunks simultâneos
+- 📜 **Histórico:** Acesse conversões anteriores facilmente
 
 ---
 
@@ -68,7 +72,7 @@ cd studio-ai-tts
 ### Passo 4: Instalar dependências
 
 ```bash
-pip install aiohttp edge-tts colorama pypdf ebooklib beautifulsoup4
+pip install aiohttp edge-tts colorama pypdf ebooklib beautifulsoup4 python-docx
 ```
 
 ### Passo 5: Executar
