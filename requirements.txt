@@ -1,0 +1,6 @@
+aiohttp
+edge-tts
+colorama
+pypdf
+ebooklib
+beautifulsoup4

@@ -32,104 +32,51 @@ Transforme qualquer texto, PDF ou EPUB em audiobooks de alta qualidade usando as
 
 ## 📱 Android (Termux)
 
-### Passo 1: Instalar o Termux
+### 🚀 Instalação Automática
 
-1. Baixe o **Termux** da [F-Droid](https://f-droid.org/packages/com.termux/) (NÃO use a versão da Play Store, está desatualizada)
-2. Abra o Termux e aguarde a instalação inicial
+1. **Instale o Termux:**
+   - Baixe e instale o **Termux** pela [F-Droid](https://f-droid.org/packages/com.termux/) (NÃO use a versão da Play Store).
 
-### Passo 2: Preparar o ambiente
-
-Cole os comandos abaixo **um de cada vez** e pressione Enter:
+2. **Copie e cole este COMANDO ÚNICO no Termux:**
 
 ```bash
-# Atualiza os pacotes
-pkg update && pkg upgrade -y
-
-# Instala Python e FFmpeg
-pkg install python ffmpeg git -y
-
-# Dá permissão para acessar seus arquivos
-termux-setup-storage
+pkg install git -y && git clone https://github.com/JonJonesBR/studio-ai-tts.git && cd studio-ai-tts && bash install.sh
 ```
 
-### Passo 3: Baixar o Studio AI
+> O script fará tudo: atualizará o sistema, instalará Python e FFmpeg, pedirá permissão de arquivos e configurará o projeto.
+
+1. **Para usar no futuro:**
+   Sempre que abrir o Termux, digite:
 
 ```bash
-# Vai para a pasta de downloads
-cd ~/storage/downloads
-
-# Baixa o projeto
-git clone https://github.com/JonJonesBR/studio-ai-tts.git
-
-# Entra na pasta
 cd studio-ai-tts
+./run.sh
 ```
-
-### Passo 4: Instalar dependências
-
-```bash
-pip install aiohttp edge-tts colorama pypdf ebooklib beautifulsoup4
-```
-
-### Passo 5: Executar
-
-```bash
-python tts.py
-```
-
-> 💡 **Dica:** O Edge TTS funciona sem nenhuma configuração! Se quiser usar vozes Gemini, adicione suas API keys pelo menu `2 - Gerenciar Chaves` dentro do programa.
 
 ---
 
 ## 🪟 Windows
 
-### Passo 1: Instalar Python
+### 🚀 Instalação Automática (Recomendada)
 
-1. Acesse [python.org/downloads](https://www.python.org/downloads/)
-2. Clique em **"Download Python 3.x.x"**
-3. **IMPORTANTE:** Na instalação, marque a opção ✅ **"Add Python to PATH"**
-4. Clique em "Install Now"
+1. **Baixe o projeto:**
+   - [Clique aqui para baixar o ZIP](https://github.com/JonJonesBR/studio-ai-tts/archive/refs/heads/main.zip) e extraia para uma pasta.
+   - OU use Git: `git clone https://github.com/JonJonesBR/studio-ai-tts.git`
 
-### Passo 2: Instalar FFmpeg
-
-1. Acesse [gyan.dev/ffmpeg/builds](https://www.gyan.dev/ffmpeg/builds/)
-2. Baixe **"ffmpeg-release-essentials.zip"**
-3. Extraia para `C:\ffmpeg`
-4. Adicione ao PATH:
-   - Pressione `Win + R`, digite `sysdm.cpl` e pressione Enter
-   - Vá em **Avançado** → **Variáveis de Ambiente**
-   - Em "Path", clique em **Editar** → **Novo**
-   - Adicione: `C:\ffmpeg\bin`
-   - Clique OK em tudo
-
-### Passo 3: Baixar o Studio AI
-
-1. Acesse a página do projeto no GitHub
-2. Clique no botão verde **"Code"** → **"Download ZIP"**
-3. Extraia o ZIP para uma pasta (ex: `C:\StudioAI`)
-
-### Passo 4: Instalar dependências
-
-1. Abra o **Prompt de Comando** (pesquise por "cmd" no menu Iniciar)
-2. Navegue até a pasta:
+2. **Instale com um comando:**
+   Abra a pasta do projeto, digite `cmd` na barra de endereço, e no terminal cole:
 
 ```cmd
-cd C:\StudioAI
+install.bat
 ```
 
-1. Instale as bibliotecas:
+> O script irá verificar e instalar automaticamente o **Python**, **FFmpeg** e todas as **bibliotecas** necessárias.
+
+1. **Inicie o programa:**
 
 ```cmd
-pip install aiohttp edge-tts colorama pypdf ebooklib beautifulsoup4
+run.bat
 ```
-
-### Passo 5: Executar
-
-```cmd
-python tts.py
-```
-
-> 💡 **Dica:** O Edge TTS funciona sem nenhuma configuração! Se quiser usar vozes Gemini, adicione suas API keys pelo menu `2 - Gerenciar Chaves` dentro do programa.
 
 ---
 
