@@ -36,7 +36,7 @@ init(autoreset=True)
 class AppConfig:
     """Configurações imutáveis da aplicação."""
     CONFIG_FILE: str = "studio_config.json"
-    DEFAULT_CHUNK_LIMIT: int = 3000
+    DEFAULT_CHUNK_LIMIT: int = 1500
     MIN_CHUNK_SIZE: int = 100
     MAX_CHUNK_SIZE: int = 5000
     MAX_RETRIES: int = 10
@@ -603,32 +603,35 @@ class EdgeTTSClient:
         self.cache = cache
     
     async def synthesize(self, text: str, voice: str, rate: str, output_path: str) -> bool:
-        """Sintetiza usando Edge TTS."""
         # Verifica cache
-        cache_key = f"{voice}:{rate}:{text}"
         cached = self.cache.get(text, voice, "edge")
         if cached:
             try:
-                # Converte WAV cacheado para MP3 se necessário
-                # Edge já retorna MP3, então salvamos direto
                 Path(output_path).write_bytes(cached)
                 return True
             except Exception:
                 pass
         
         try:
-            communicate = edge_tts.Communicate(text, voice, rate=rate)
-            audio_data = bytearray()
             
+            
+            # Microsoft bloqueou SSML customizado na versão 5.0.0+
+            # Usamos apenas os parâmetros padrão rate/voice
+            communicate = edge_tts.Communicate(
+                text=text,
+                voice=voice,
+                rate=rate
+            )
+            
+            # Processa o áudio
+            audio_data = bytearray()
             async for chunk in communicate.stream():
                 if chunk["type"] == "audio":
                     audio_data.extend(chunk["data"])
             
             if audio_data:
-                # Salva no formato original (MP3)
                 data_bytes = bytes(audio_data)
                 Path(output_path).write_bytes(data_bytes)
-                # Também salva no cache (como MP3)
                 self.cache.put(text, voice, "edge", data_bytes)
                 return True
             
@@ -637,6 +640,7 @@ class EdgeTTSClient:
         except Exception as e:
             Logger.error(f"Erro Edge TTS: {e}")
             return False
+
 
 
 # =============================================================================
@@ -1243,62 +1247,65 @@ class ConversionEngine:
 
     
     async def _convert_edge(self, text: str, output_path: str):
-        """Conversão usando Edge TTS."""
+        """Conversão usando Edge TTS com concorrência (Simultâneo)."""
+
         client = EdgeTTSClient(self.cache)
+        limite_caracteres = self.settings.limite_chunk
         
-        Logger.info("Gerando áudio com Edge TTS...")
-        
-        # Edge TTS gera tudo de uma vez (sem chunks para arquivos pequenos)
-        # ou podemos dividir para arquivos grandes
-        if len(text) > 5000:
-            chunks = self.text_processor.smart_split(text, 5000)
-            temp_files = []
-            temp_dir = Path(output_path).parent / f".temp_{int(time.time())}"
+        # Define o limite de tarefas simultâneas (3 a 5 é o ideal para segurança)
+        CONCURRENCY_LIMIT = 5 
+        semaphore = asyncio.Semaphore(CONCURRENCY_LIMIT)
+
+        if len(text) > limite_caracteres:
+            chunks = self.text_processor.smart_split(text, limite_caracteres)
+            total_chunks = len(chunks)
+            Logger.info(f"Iniciando conversão simultânea de {total_chunks} chunks (Limite: {CONCURRENCY_LIMIT})...")
+            
+            temp_dir = Path(output_path).parent / f".temp_edge_{int(time.time())}"
             temp_dir.mkdir(exist_ok=True)
             
-            try:
-                for idx, chunk in enumerate(chunks, 1):
-                    Logger.progress(idx, len(chunks), "Chunk")
-                    temp_file = temp_dir / f"chunk_{idx:04d}.mp3"
-                    
+            # Lista para manter a ordem correta dos arquivos
+            temp_files = [str(temp_dir / f"chunk_{i+1:04d}.mp3") for i in range(total_chunks)]
+            
+            async def semaphore_task(chunk_text, chunk_idx, chunk_path):
+                async with semaphore:
+                    # Tenta converter o chunk
                     success = await client.synthesize(
-                        chunk,
+                        chunk_text,
                         self.settings.voz_edge,
                         self.settings.velocidade,
-                        str(temp_file)
+                        chunk_path
                     )
-                    
                     if success:
-                        temp_files.append(str(temp_file))
-                
-                print()
-                Logger.info("Unindo partes...")
-                self.audio_processor.merge_files(temp_files, output_path, apply_normalization=False)
-                
-            finally:
-                self._cleanup(temp_dir, temp_files)
-        else:
-            # Arquivo pequeno: gera direto
-            success = await client.synthesize(
-                text,
-                self.settings.voz_edge,
-                self.settings.velocidade,
-                output_path
-            )
+                        Logger.info(f"✔ Chunk {chunk_idx}/{total_chunks} concluído.")
+                    else:
+                        Logger.error(f"✘ Falha no chunk {chunk_idx}")
+                    return success
+
+            # Cria a lista de tarefas
+            tasks = [
+                semaphore_task(chunks[i], i + 1, temp_files[i]) 
+                for i in range(total_chunks)
+            ]
             
-            if success:
-                Logger.success(f"✅ Concluído: {output_path}")
+            # Executa todas simultaneamente respeitando o semáforo
+            results = await asyncio.gather(*tasks)
+            
+            if all(results):
+                Logger.info("Unindo partes e masterizando...")
+                self.audio_processor.merge_files(temp_files, output_path, apply_normalization=False)
+                Logger.success(f"✅ Audiobook completo gerado: {output_path}")
             else:
-                raise AudioProcessingError("Falha na geração")
-    
-    def _cleanup(self, temp_dir: Path, temp_files: List[str]):
-        """Limpa arquivos temporários."""
-        try:
-            for f in temp_files:
-                Path(f).unlink(missing_ok=True)
-            temp_dir.rmdir()
-        except Exception:
-            pass
+                Logger.error("Alguns chunks falharam. Verifique a conexão.")
+            
+            self._cleanup(temp_dir, temp_files)
+        else:
+            # Texto pequeno: Processamento simples
+            success = await client.synthesize(
+                text, self.settings.voz_edge, self.settings.velocidade, output_path
+            )
+            if success: Logger.success(f"✅ Concluído: {output_path}")
+
     
     def _play_audio(self, file_path: str):
         """Reproduz arquivo de áudio de forma segura (sem injeção de comando)."""
