@@ -1247,12 +1247,11 @@ class ConversionEngine:
 
     
     async def _convert_edge(self, text: str, output_path: str):
-        """Conversão usando Edge TTS com concorrência (Simultâneo)."""
-
+        """Conversão usando Edge TTS com concorrência e RETRY automático."""
         client = EdgeTTSClient(self.cache)
         limite_caracteres = self.settings.limite_chunk
         
-        # Define o limite de tarefas simultâneas (3 a 5 é o ideal para segurança)
+        # Define o limite de tarefas simultâneas
         CONCURRENCY_LIMIT = 5 
         semaphore = asyncio.Semaphore(CONCURRENCY_LIMIT)
 
@@ -1269,18 +1268,30 @@ class ConversionEngine:
             
             async def semaphore_task(chunk_text, chunk_idx, chunk_path):
                 async with semaphore:
-                    # Tenta converter o chunk
-                    success = await client.synthesize(
-                        chunk_text,
-                        self.settings.voz_edge,
-                        self.settings.velocidade,
-                        chunk_path
-                    )
-                    if success:
-                        Logger.info(f"✔ Chunk {chunk_idx}/{total_chunks} concluído.")
-                    else:
-                        Logger.error(f"✘ Falha no chunk {chunk_idx}")
-                    return success
+                    max_retries = 5  # Aumentado para 5 tentativas
+                    base_delay = 2.0
+                    
+                    for attempt in range(max_retries):
+                        # Tenta converter o chunk
+                        success = await client.synthesize(
+                            chunk_text,
+                            self.settings.voz_edge,
+                            self.settings.velocidade,
+                            chunk_path
+                        )
+                        
+                        if success:
+                            Logger.info(f"✔ Chunk {chunk_idx}/{total_chunks} concluído.")
+                            return True
+                        else:
+                            # Calcula espera: 2s, 4s, 8s... (Backoff Exponencial)
+                            wait_time = base_delay * (2 ** attempt)
+                            Logger.warning(f"⚠️ Falha no chunk {chunk_idx} (Tentativa {attempt+1}/{max_retries}). Aguardando {wait_time}s...")
+                            await asyncio.sleep(wait_time)
+                    
+                    # Se esgotar as tentativas
+                    Logger.error(f"❌ DESISTINDO do chunk {chunk_idx} após {max_retries} tentativas.")
+                    return False
 
             # Cria a lista de tarefas
             tasks = [
@@ -1296,15 +1307,27 @@ class ConversionEngine:
                 self.audio_processor.merge_files(temp_files, output_path, apply_normalization=False)
                 Logger.success(f"✅ Audiobook completo gerado: {output_path}")
             else:
-                Logger.error("Alguns chunks falharam. Verifique a conexão.")
+                Logger.error("❌ ERRO CRÍTICO: Alguns chunks falharam definitivamente. O áudio está incompleto.")
             
             self._cleanup(temp_dir, temp_files)
+        
         else:
-            # Texto pequeno: Processamento simples
-            success = await client.synthesize(
-                text, self.settings.voz_edge, self.settings.velocidade, output_path
-            )
-            if success: Logger.success(f"✅ Concluído: {output_path}")
+            # Texto pequeno: Processamento simples com retry básico
+            # Não cria arquivos temporários, converte direto para o output_path
+            success = False
+            for attempt in range(3):
+                success = await client.synthesize(
+                    text, self.settings.voz_edge, self.settings.velocidade, output_path
+                )
+                if success:
+                    Logger.success(f"✅ Concluído: {output_path}")
+                    break
+                else:
+                    Logger.warning(f"⚠️ Tentativa {attempt+1} falhou para texto curto. Retentando...")
+                    await asyncio.sleep(2)
+            
+            if not success:
+                Logger.error("Falha ao converter texto curto.")
 
     
     def _play_audio(self, file_path: str):
@@ -1348,6 +1371,27 @@ class ConversionEngine:
                 )
         except Exception as e:
             Logger.warning(f"Não foi possível reproduzir o áudio: {e}")
+
+    def _cleanup(self, temp_dir: Path, temp_files: List[str]):
+        """Remove arquivos temporários e diretório de forma segura."""
+        try:
+            # Remove arquivos individuais
+            for f in temp_files:
+                if os.path.exists(f):
+                    try:
+                        os.remove(f)
+                    except Exception:
+                        pass
+            
+            # Remove o diretório vazio (ou com sobras)
+            if temp_dir.exists():
+                import shutil
+                shutil.rmtree(temp_dir, ignore_errors=True)
+                
+            Logger.debug("Limpeza de arquivos temporários concluída.")
+            
+        except Exception as e:
+            Logger.debug(f"Aviso não-crítico na limpeza: {e}")
 
 
 # =============================================================================
